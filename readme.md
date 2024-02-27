@@ -1,1 +1,1 @@
-#Theft Detection Ai Project
+Theft Detection Ai Project
