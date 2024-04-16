@@ -6,6 +6,8 @@ import mediapipe as mp
 import matplotlib.pyplot as plt
 import os
 
+INTERVAL_TIME = 5
+
 # Initializing mediapipe pose class.
 mp_pose = mp.solutions.pose
 
@@ -144,7 +146,7 @@ while video.isOpened():
     time1 = time2
     
     # Check if 10 seconds have elapsed since the last screenshot
-    if time2 - last_screenshot_time >= 10:
+    if time2 - last_screenshot_time >= INTERVAL_TIME:
         # Save the screenshot
         screenshot_filename = f"screenshots/screenshot_{screenshot_counter}.png"
         cv2.imwrite(screenshot_filename, frame)
