@@ -6,7 +6,7 @@ import mediapipe as mp
 import matplotlib.pyplot as plt
 import os
 
-INTERVAL_TIME = 5
+INTERVAL_TIME = 2
 
 # Initializing mediapipe pose class.
 mp_pose = mp.solutions.pose
