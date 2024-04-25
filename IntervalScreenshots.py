@@ -109,7 +109,7 @@ os.makedirs("screenshots", exist_ok=True)
 # Counter to keep track of screenshot index
 screenshot_counter = 0
 
-def print_api_output(prompt, screenshot_filename, API_KEY):
+def print_api_output(prompt, screenshot_filename, frame, API_KEY):
     response = API.get_api_req(prompt, screenshot_filename, API_KEY)
     print(f'{screenshot_filename}: {response}')
 
@@ -170,7 +170,7 @@ while video.isOpened():
 
         # API Request
         prompt = 'What is the danger rating in this image from 1 to 100? Only respond with a single integer output from 1 to 100. Danger is defined as someone who is posing a threat or looks to be able to cause harm.'
-        api_thread = threading.Thread(target=print_api_output, args=(prompt, screenshot_filename, API_KEY))
+        api_thread = threading.Thread(target=print_api_output, args=(prompt, screenshot_filename, frame, API_KEY))
         api_thread.start()
     
     
