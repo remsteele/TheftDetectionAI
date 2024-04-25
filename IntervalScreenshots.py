@@ -5,6 +5,9 @@ from time import time
 import mediapipe as mp
 import matplotlib.pyplot as plt
 import os
+import SendApiReq as API
+
+API_KEY = "AIzaSyATrAqafS-C4QrEKxwvtLpn7L8elw-ZYxs"
 
 INTERVAL_TIME = 2
 
@@ -155,6 +158,12 @@ while video.isOpened():
         # Update last_screenshot_time and screenshot_counter
         last_screenshot_time = time2
         screenshot_counter += 1
+
+        # API Request
+        prompt = 'What is happening here?'
+        response = API.get_api_req(prompt, screenshot_filename, API_KEY)
+        print(response)
+    
     
     # Display the frame.
     cv2.imshow('Pose Detection', frame)
