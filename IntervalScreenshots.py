@@ -6,10 +6,11 @@ import mediapipe as mp
 import matplotlib.pyplot as plt
 import os
 import SendApiReq as API
+import threading
 
 API_KEY = "AIzaSyATrAqafS-C4QrEKxwvtLpn7L8elw-ZYxs"
 
-INTERVAL_TIME = 2
+INTERVAL_TIME = 5
 
 # Initializing mediapipe pose class.
 mp_pose = mp.solutions.pose
@@ -52,9 +53,9 @@ def detectPose(image, pose, display=True):
     # Check if any landmarks are detected.
     if results.pose_landmarks:
     
-        # Draw Pose landmarks on the output image.
-        mp_drawing.draw_landmarks(image=output_image, landmark_list=results.pose_landmarks,
-                                  connections=mp_pose.POSE_CONNECTIONS)
+        # T)D): Draw Pose landmarks on the output image.
+        # mp_drawing.draw_landmarks(image=output_image, landmark_list=results.pose_landmarks,
+                                #   connections=mp_pose.POSE_CONNECTIONS)
         
         # Iterate over the detected landmarks.
         for landmark in results.pose_landmarks.landmark:
@@ -71,7 +72,7 @@ def detectPose(image, pose, display=True):
         plt.subplot(121);plt.imshow(image[:,:,::-1]);plt.title("Original Image");plt.axis('off');
         plt.subplot(122);plt.imshow(output_image[:,:,::-1]);plt.title("Output Image");plt.axis('off');
         
-        # Also Plot the Pose landmarks in 3D.
+        # TODO: Also Plot the Pose landmarks in 3D.
         mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS)
         
     # Otherwise
@@ -107,6 +108,10 @@ os.makedirs("screenshots", exist_ok=True)
 
 # Counter to keep track of screenshot index
 screenshot_counter = 0
+
+def print_api_output(prompt, screenshot_filename, API_KEY):
+    response = API.get_api_req(prompt, screenshot_filename, API_KEY)
+    print(f'{screenshot_filename}: {response}')
 
 # Iterate until the video is accessed successfully.
 while video.isOpened():
@@ -148,21 +153,25 @@ while video.isOpened():
     # As this frame will become previous frame in next iteration.
     time1 = time2
     
-    # Check if 10 seconds have elapsed since the last screenshot
+    
+
+
+    # Check if n seconds have elapsed since the last screenshot
     if time2 - last_screenshot_time >= INTERVAL_TIME:
         # Save the screenshot
         screenshot_filename = f"screenshots/screenshot_{screenshot_counter}.png"
         cv2.imwrite(screenshot_filename, frame)
-        print(f"Screenshot saved as {screenshot_filename}")
+        # TODO: SCREENSHOT SAVED AS
+        # print(f"Screenshot saved as {screenshot_filename}")
         
         # Update last_screenshot_time and screenshot_counter
         last_screenshot_time = time2
         screenshot_counter += 1
 
         # API Request
-        prompt = 'What is happening here?'
-        response = API.get_api_req(prompt, screenshot_filename, API_KEY)
-        print(response)
+        prompt = 'What is the danger rating in this image from 1 to 100? Only respond with a single integer output from 1 to 100. Danger is defined as someone who is posing a threat or looks to be able to cause harm.'
+        api_thread = threading.Thread(target=print_api_output, args=(prompt, screenshot_filename, API_KEY))
+        api_thread.start()
     
     
     # Display the frame.
