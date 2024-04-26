@@ -110,7 +110,7 @@ screenshot_counter = 0
 # Thread function to create API call
 def print_api_output(prompt, screenshot_filename, API_KEY):
     response = API.get_api_req(prompt, screenshot_filename, API_KEY)
-    print(f'{screenshot_filename}: {response}')
+    print(f'{screenshot_filename}: {response}%')
 
 # Iterate until the video is accessed successfully.
 while video.isOpened():
