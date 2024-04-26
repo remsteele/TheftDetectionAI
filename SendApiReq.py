@@ -1,11 +1,5 @@
-import pathlib
-import textwrap
-import os
 import PIL.Image
 import google.generativeai as genai
-import time
-from IPython.display import display
-from IPython.display import Markdown
 
 def get_api_req(prompt, file_name, API_KEY):
   genai.configure(api_key=API_KEY)
