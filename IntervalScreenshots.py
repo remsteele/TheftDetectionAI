@@ -10,7 +10,7 @@ import threading
 
 API_KEY = "AIzaSyATrAqafS-C4QrEKxwvtLpn7L8elw-ZYxs"
 
-INTERVAL_TIME = 5
+INTERVAL_TIME = 3
 
 # Initializing mediapipe pose class.
 mp_pose = mp.solutions.pose
@@ -53,7 +53,7 @@ def detectPose(image, pose, display=True):
     # Check if any landmarks are detected.
     if results.pose_landmarks:
     
-        # T)D): Draw Pose landmarks on the output image.
+        # TODO: Draw Pose landmarks on the output image.
         # mp_drawing.draw_landmarks(image=output_image, landmark_list=results.pose_landmarks,
                                 #   connections=mp_pose.POSE_CONNECTIONS)
         
@@ -69,8 +69,8 @@ def detectPose(image, pose, display=True):
     
         # Display the original input image and the resultant image.
         plt.figure(figsize=[22,22])
-        plt.subplot(121);plt.imshow(image[:,:,::-1]);plt.title("Original Image");plt.axis('off');
-        plt.subplot(122);plt.imshow(output_image[:,:,::-1]);plt.title("Output Image");plt.axis('off');
+        plt.subplot(121);plt.imshow(image[:,:,::-1]);plt.title("Original Image");plt.axis('off')
+        plt.subplot(122);plt.imshow(output_image[:,:,::-1]);plt.title("Output Image");plt.axis('off')
         
         # TODO: Also Plot the Pose landmarks in 3D.
         mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS)
@@ -109,7 +109,8 @@ os.makedirs("screenshots", exist_ok=True)
 # Counter to keep track of screenshot index
 screenshot_counter = 0
 
-def print_api_output(prompt, screenshot_filename, frame, API_KEY):
+# Thread function to create API call
+def print_api_output(prompt, screenshot_filename, API_KEY):
     response = API.get_api_req(prompt, screenshot_filename, API_KEY)
     print(f'{screenshot_filename}: {response}')
 
@@ -170,7 +171,7 @@ while video.isOpened():
 
         # API Request
         prompt = 'What is the danger rating in this image from 1 to 100? Only respond with a single integer output from 1 to 100. Danger is defined as someone who is posing a threat or looks to be able to cause harm.'
-        api_thread = threading.Thread(target=print_api_output, args=(prompt, screenshot_filename, frame, API_KEY))
+        api_thread = threading.Thread(target=print_api_output, args=(prompt, screenshot_filename, API_KEY))
         api_thread.start()
     
     
