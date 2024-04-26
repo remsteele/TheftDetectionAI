@@ -53,9 +53,9 @@ def detectPose(image, pose, display=True):
     # Check if any landmarks are detected.
     if results.pose_landmarks:
     
-        # TODO: Draw Pose landmarks on the output image.
-        # mp_drawing.draw_landmarks(image=output_image, landmark_list=results.pose_landmarks,
-                                #   connections=mp_pose.POSE_CONNECTIONS)
+        # Draw Pose landmarks on the output image.
+        mp_drawing.draw_landmarks(image=output_image, landmark_list=results.pose_landmarks,
+                                  connections=mp_pose.POSE_CONNECTIONS)
         
         # Iterate over the detected landmarks.
         for landmark in results.pose_landmarks.landmark:
@@ -72,7 +72,7 @@ def detectPose(image, pose, display=True):
         plt.subplot(121);plt.imshow(image[:,:,::-1]);plt.title("Original Image");plt.axis('off')
         plt.subplot(122);plt.imshow(output_image[:,:,::-1]);plt.title("Output Image");plt.axis('off')
         
-        # TODO: Also Plot the Pose landmarks in 3D.
+        # Also Plot the Pose landmarks in 3D.
         mp_drawing.plot_landmarks(results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS)
         
     # Otherwise
@@ -118,7 +118,7 @@ def print_api_output(prompt, screenshot_filename, API_KEY):
 while video.isOpened():
     
     # Read a frame.
-    ok, frame = video.read()
+    ok, org_frame = video.read()
     
     # Check if frame is not read properly.
     if not ok:
@@ -127,16 +127,16 @@ while video.isOpened():
         break
     
     # Flip the frame horizontally for natural (selfie-view) visualization.
-    frame = cv2.flip(frame, 1)
+    org_frame = cv2.flip(org_frame, 1)
     
     # Get the width and height of the frame
-    frame_height, frame_width, _ =  frame.shape
+    frame_height, frame_width, _ =  org_frame.shape
     
     # Resize the frame while keeping the aspect ratio.
-    frame = cv2.resize(frame, (int(frame_width * (640 / frame_height)), 640))
+    org_frame = cv2.resize(org_frame, (int(frame_width * (640 / frame_height)), 640))
     
     # Perform Pose landmark detection.
-    frame, _ = detectPose(frame, pose_video, display=False)
+    frame, landmarks = detectPose(org_frame, pose_video, display=False)
     
     # Set the time for this frame to the current time.
     time2 = time()
@@ -161,7 +161,7 @@ while video.isOpened():
     if time2 - last_screenshot_time >= INTERVAL_TIME:
         # Save the screenshot
         screenshot_filename = f"screenshots/screenshot_{screenshot_counter}.png"
-        cv2.imwrite(screenshot_filename, frame)
+        cv2.imwrite(screenshot_filename, org_frame)
         # TODO: SCREENSHOT SAVED AS
         # print(f"Screenshot saved as {screenshot_filename}")
         
@@ -169,10 +169,12 @@ while video.isOpened():
         last_screenshot_time = time2
         screenshot_counter += 1
 
-        # API Request
-        prompt = 'What is the danger rating in this image from 1 to 100? Only respond with a single integer output from 1 to 100. Danger is defined as someone who is posing a threat or looks to be able to cause harm.'
-        api_thread = threading.Thread(target=print_api_output, args=(prompt, screenshot_filename, API_KEY))
-        api_thread.start()
+        # If people are detected
+        if landmarks:
+            # API Request
+            prompt = 'What is the danger rating in this image from 1 to 100? Only respond with a single integer output from 1 to 100. Danger is defined as someone who is posing a threat or looks to be able to cause harm.'
+            api_thread = threading.Thread(target=print_api_output, args=(prompt, screenshot_filename, API_KEY))
+            api_thread.start()
     
     
     # Display the frame.
