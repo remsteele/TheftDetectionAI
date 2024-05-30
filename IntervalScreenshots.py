@@ -6,7 +6,7 @@ import os
 import SendApiReq as API
 import threading
 
-API_KEY = "AIzaSyATrAqafS-C4QrEKxwvtLpn7L8elw-ZYxs"
+API_KEY = "//////////"
 
 INTERVAL_TIME = 3
 
